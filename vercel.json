@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/watch",
+      "destination": "/watch.html"
+    },
+    {
       "source": "/v",
       "destination": "/api/preview"
     }
