@@ -117,6 +117,7 @@ module.exports = function handler(request, response) {
   const title = readParam(query, "title").trim().slice(0, 140) || "Video preview";
   const pageUrl = absoluteRequestUrl(request);
   const escapedTitle = escapeHtml(title);
+  const escapedDescription = escapeHtml("Watch on YouTube");
   const escapedDestination = escapeHtml(destination.url);
   const escapedImage = escapeHtml(imageUrl);
   const escapedPageUrl = escapeHtml(pageUrl);
@@ -130,14 +131,14 @@ module.exports = function handler(request, response) {
     <meta property="og:type" content="website" />
     <meta property="og:url" content="${escapedPageUrl}" />
     <meta property="og:title" content="${escapedTitle}" />
-    <meta property="og:description" content="${escapedDestination}" />
+    <meta property="og:description" content="${escapedDescription}" />
     <meta property="og:image" content="${escapedImage}" />
     <meta property="og:image:secure_url" content="${escapedImage}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapedTitle}" />
-    <meta name="twitter:description" content="${escapedDestination}" />
+    <meta name="twitter:description" content="${escapedDescription}" />
     <meta name="twitter:image" content="${escapedImage}" />
     <link rel="canonical" href="${escapedDestination}" />
     <script>
