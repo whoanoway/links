@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>YouTube Link Maker</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f7fb;
+        --panel: #ffffff;
+        --ink: #17181c;
+        --muted: #616673;
+        --line: #d9dde7;
+        --red: #e62117;
+        --red-dark: #bb1610;
+        --teal: #00897b;
+        --yellow: #f5bd1f;
+        --shadow: 0 18px 55px rgba(22, 24, 32, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          linear-gradient(rgba(23, 24, 28, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(23, 24, 28, 0.035) 1px, transparent 1px),
+          var(--bg);
+        background-size: 28px 28px;
+      }
+
+      main {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      .tool {
+        width: min(100%, 680px);
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .top {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 22px;
+      }
+
+      .mark {
+        width: 48px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+        border-radius: 7px;
+        background: var(--red);
+      }
+
+      .mark::before {
+        content: "";
+        width: 0;
+        height: 0;
+        margin-left: 3px;
+        border-top: 9px solid transparent;
+        border-bottom: 9px solid transparent;
+        border-left: 15px solid #fff;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.65rem, 5vw, 2.35rem);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      .destination {
+        margin-bottom: 12px;
+      }
+
+      label {
+        display: grid;
+        gap: 7px;
+        color: var(--muted);
+        font-size: 0.88rem;
+        font-weight: 700;
+      }
+
+      input,
+      button {
+        min-height: 44px;
+        border-radius: 7px;
+        font: inherit;
+      }
+
+      input {
+        width: 100%;
+        padding: 0 42px 0 12px;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        background: #fff;
+      }
+
+      input {
+        padding-right: 12px;
+      }
+
+      button {
+        border: 0;
+        padding: 0 16px;
+        color: #fff;
+        font-weight: 800;
+        background: var(--red);
+        cursor: pointer;
+      }
+
+      button:hover,
+      button:focus-visible {
+        background: var(--red-dark);
+      }
+
+      button:focus-visible,
+      input:focus-visible,
+      a:focus-visible {
+        outline: 3px solid rgba(0, 137, 123, 0.35);
+        outline-offset: 3px;
+      }
+
+      .preview {
+        display: grid;
+        grid-template-columns: 164px minmax(0, 1fr);
+        gap: 16px;
+        align-items: center;
+        margin-top: 18px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcff;
+      }
+
+      .thumbnail {
+        aspect-ratio: 16 / 9;
+        min-width: 0;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        border-radius: 6px;
+        background:
+          linear-gradient(135deg, rgba(245, 189, 31, 0.9), rgba(0, 137, 123, 0.85)),
+          linear-gradient(45deg, #222, #555);
+      }
+
+      .thumbnail.has-image {
+        background-color: #111;
+        background-position: center;
+        background-size: cover;
+      }
+
+      .play {
+        width: 50px;
+        height: 36px;
+        display: grid;
+        place-items: center;
+        border-radius: 7px;
+        background: rgba(230, 33, 23, 0.94);
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.2);
+      }
+
+      .play::before {
+        content: "";
+        width: 0;
+        height: 0;
+        margin-left: 3px;
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+        border-left: 13px solid #fff;
+      }
+
+      .result {
+        min-width: 0;
+      }
+
+      .eyebrow {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      #previewLink {
+        display: block;
+        min-width: 0;
+        color: var(--red-dark);
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+          monospace;
+        font-size: clamp(0.83rem, 2.8vw, 1rem);
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 3px;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .actions button {
+        color: var(--ink);
+        border: 1px solid var(--line);
+        background: #fff;
+      }
+
+      .actions button:hover,
+      .actions button:focus-visible {
+        border-color: var(--teal);
+        background: rgba(0, 137, 123, 0.08);
+      }
+
+      #status {
+        min-height: 22px;
+        margin: 14px 0 0;
+        color: var(--teal);
+        font-size: 0.95rem;
+        font-weight: 750;
+      }
+
+      #status.error {
+        color: var(--red-dark);
+      }
+
+      @media (max-width: 560px) {
+        main {
+          padding: 14px;
+        }
+
+        .tool {
+          padding: 16px;
+        }
+
+        .preview,
+        .actions {
+          grid-template-columns: 1fr;
+        }
+
+        .thumbnail {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="tool" aria-labelledby="title">
+        <div class="top">
+          <span class="mark" aria-hidden="true"></span>
+          <h1 id="title">YouTube Link Maker</h1>
+        </div>
+
+        <div class="destination">
+          <label>
+            Destination video
+            <input
+              id="destination"
+              type="text"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
+          </label>
+        </div>
+
+        <div class="destination">
+          <label>
+            Preview title
+            <input
+              id="previewTitle"
+              type="text"
+              autocomplete="off"
+              value="Check this out"
+              placeholder="Video title"
+            />
+          </label>
+        </div>
+
+        <div class="destination">
+          <label>
+            Preview thumbnail URL
+            <input
+              id="thumbnailUrl"
+              type="url"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="https://example.com/thumbnail.jpg"
+            />
+          </label>
+        </div>
+
+        <div class="preview">
+          <div class="thumbnail" id="thumbnailPreview" aria-hidden="true">
+            <span class="play"></span>
+          </div>
+          <div class="result">
+            <span class="eyebrow">YouTube URL</span>
+            <a id="previewLink" href="#" target="_blank" rel="noopener noreferrer"></a>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="copyRich" type="button">Copy rich link</button>
+          <button id="copyMarkdown" type="button">Copy Markdown</button>
+          <button id="copyHtml" type="button">Copy HTML</button>
+          <button id="downloadPage" type="button">Download preview page</button>
+        </div>
+
+        <p id="status" role="status" aria-live="polite"></p>
+      </section>
+    </main>
+
+    <script>
+      const videoIdPattern = /^[A-Za-z0-9_-]{11}$/;
+      const destinationInput = document.querySelector("#destination");
+      const previewTitleInput = document.querySelector("#previewTitle");
+      const thumbnailUrlInput = document.querySelector("#thumbnailUrl");
+      const previewLink = document.querySelector("#previewLink");
+      const thumbnailPreview = document.querySelector("#thumbnailPreview");
+      const statusLine = document.querySelector("#status");
+      let destinationUrl = "";
+
+      function normalizeYouTubeUrl(value) {
+        const trimmed = value.trim();
+        if (videoIdPattern.test(trimmed)) {
+          return `https://www.youtube.com/watch?v=${trimmed}`;
+        }
+
+        let parsedUrl;
+        try {
+          parsedUrl = new URL(trimmed);
+        } catch {
+          return "";
+        }
+
+        const host = parsedUrl.hostname.replace(/^www\./, "");
+        let id = "";
+
+        if (host === "youtu.be") {
+          id = parsedUrl.pathname.split("/").filter(Boolean)[0] || "";
+        } else if (host === "youtube.com" || host === "m.youtube.com") {
+          if (parsedUrl.pathname === "/watch") {
+            id = parsedUrl.searchParams.get("v") || "";
+          } else {
+            const parts = parsedUrl.pathname.split("/").filter(Boolean);
+            if (["shorts", "embed", "live"].includes(parts[0])) {
+              id = parts[1] || "";
+            }
+          }
+        }
+
+        return videoIdPattern.test(id) ? `https://www.youtube.com/watch?v=${id}` : "";
+      }
+
+      function normalizePublicUrl(value, requireHttps = false) {
+        const trimmed = value.trim();
+        if (!trimmed) return "";
+
+        let parsedUrl;
+        try {
+          parsedUrl = new URL(trimmed);
+        } catch {
+          return "";
+        }
+
+        const isWebUrl = parsedUrl.protocol === "https:" || parsedUrl.protocol === "http:";
+        if (!isWebUrl || (requireHttps && parsedUrl.protocol !== "https:")) return "";
+        return parsedUrl.href;
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, (character) => {
+          const entities = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            "\"": "&quot;",
+            "'": "&#39;"
+          };
+          return entities[character];
+        });
+      }
+
+      function setStatus(message, isError = false) {
+        statusLine.textContent = message;
+        statusLine.classList.toggle("error", isError);
+      }
+
+      function syncDestination(showError = false) {
+        destinationUrl = normalizeYouTubeUrl(destinationInput.value);
+        previewLink.textContent = destinationUrl;
+        previewLink.href = destinationUrl || "#";
+        if (!destinationUrl) {
+          setStatus(showError ? "Enter a valid YouTube link or video ID." : "", showError);
+          return false;
+        }
+        setStatus("");
+        return true;
+      }
+
+      function syncThumbnail(showError = false) {
+        const rawValue = thumbnailUrlInput.value.trim();
+        const thumbnailUrl = normalizePublicUrl(rawValue, true);
+
+        if (!rawValue) {
+          thumbnailPreview.style.backgroundImage = "";
+          thumbnailPreview.classList.remove("has-image");
+          return "";
+        }
+
+        if (!thumbnailUrl) {
+          thumbnailPreview.style.backgroundImage = "";
+          thumbnailPreview.classList.remove("has-image");
+          setStatus(showError ? "Enter a public HTTPS thumbnail image URL." : "", showError);
+          return "";
+        }
+
+        thumbnailPreview.style.backgroundImage = `url("${thumbnailUrl.replace(/["\\]/g, "\\$&")}")`;
+        thumbnailPreview.classList.add("has-image");
+        setStatus("");
+        return thumbnailUrl;
+      }
+
+      function fallbackCopy(text) {
+        const field = document.createElement("textarea");
+        field.value = text;
+        field.setAttribute("readonly", "");
+        field.style.position = "fixed";
+        field.style.top = "-1000px";
+        document.body.appendChild(field);
+        field.select();
+        document.execCommand("copy");
+        field.remove();
+      }
+
+      function fallbackCopyRich(html) {
+        const wrapper = document.createElement("div");
+        wrapper.contentEditable = "true";
+        wrapper.innerHTML = html;
+        wrapper.style.position = "fixed";
+        wrapper.style.top = "-1000px";
+        document.body.appendChild(wrapper);
+
+        const range = document.createRange();
+        range.selectNodeContents(wrapper);
+
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        document.execCommand("copy");
+        selection.removeAllRanges();
+        wrapper.remove();
+      }
+
+      function getPreviewTitle() {
+        return previewTitleInput.value.trim() || "Video preview";
+      }
+
+      function buildPreviewPageHtml() {
+        if (!syncDestination(true)) return "";
+
+        const thumbnailUrl = syncThumbnail(true);
+        if (!thumbnailUrl) return "";
+
+        const pageTitle = getPreviewTitle();
+        const description = destinationUrl;
+        const escapedTitle = escapeHtml(pageTitle);
+        const escapedDescription = escapeHtml(description);
+        const escapedDestination = escapeHtml(destinationUrl);
+        const escapedThumbnail = escapeHtml(thumbnailUrl);
+
+        return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${escapedTitle}</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="${escapedTitle}" />
+    <meta property="og:description" content="${escapedDescription}" />
+    <meta property="og:image" content="${escapedThumbnail}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapedTitle}" />
+    <meta name="twitter:description" content="${escapedDescription}" />
+    <meta name="twitter:image" content="${escapedThumbnail}" />
+    <link rel="canonical" href="${escapedDestination}" />
+    <script>
+      window.addEventListener("load", () => {
+        window.location.replace(${JSON.stringify(destinationUrl)});
+      });
+    <\/script>
+    <style>
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        font-family: system-ui, sans-serif;
+        color: #17181c;
+        background: #f6f7fb;
+      }
+
+      a {
+        width: min(92vw, 560px);
+        color: inherit;
+        text-decoration: none;
+      }
+
+      img {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+
+      span {
+        display: block;
+        margin-top: 12px;
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="${escapedDestination}">
+      <img src="${escapedThumbnail}" alt="" />
+      <span>${escapedTitle}</span>
+    </a>
+  </body>
+</html>`;
+      }
+
+      function downloadPreviewPage() {
+        const html = buildPreviewPageHtml();
+        if (!html) return;
+
+        const file = new Blob([html], { type: "text/html" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(file);
+        link.download = `video-preview-${Date.now()}.html`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+        setStatus("Downloaded preview page.");
+      }
+
+      async function copyText(getText, message) {
+        if (!syncDestination(true)) return;
+
+        const text = getText(destinationUrl);
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          fallbackCopy(text);
+        }
+        setStatus(message);
+      }
+
+      async function copyRichLink() {
+        if (!syncDestination(true)) return;
+
+        const html = `<a href="${escapeHtml(destinationUrl)}">${escapeHtml(destinationUrl)}</a>`;
+        try {
+          if (window.ClipboardItem) {
+            await navigator.clipboard.write([
+              new ClipboardItem({
+                "text/html": new Blob([html], { type: "text/html" }),
+                "text/plain": new Blob([destinationUrl], { type: "text/plain" })
+              })
+            ]);
+          } else {
+            await navigator.clipboard.writeText(html);
+          }
+          setStatus("Copied rich link.");
+        } catch {
+          fallbackCopyRich(html);
+          setStatus("Copied rich link.");
+        }
+      }
+
+      document.querySelector("#copyRich").addEventListener("click", copyRichLink);
+      document.querySelector("#copyMarkdown").addEventListener("click", () => {
+        copyText((targetUrl) => `[${targetUrl}](${targetUrl})`, "Copied Markdown link.");
+      });
+      document.querySelector("#copyHtml").addEventListener("click", () => {
+        copyText(
+          (targetUrl) => `<a href="${escapeHtml(targetUrl)}">${escapeHtml(targetUrl)}</a>`,
+          "Copied HTML link."
+        );
+      });
+      document.querySelector("#downloadPage").addEventListener("click", downloadPreviewPage);
+      destinationInput.addEventListener("input", () => {
+        syncDestination(Boolean(destinationInput.value.trim()));
+      });
+      thumbnailUrlInput.addEventListener("input", () => {
+        syncThumbnail(Boolean(thumbnailUrlInput.value.trim()));
+      });
+
+      syncDestination();
+    </script>
+  </body>
+</html>
